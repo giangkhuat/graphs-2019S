@@ -290,6 +290,44 @@ public class Graph {
       } // next()
     }; // new Iterator<Integer>
   } // vertices()
+  
+  public void reachableFrom(PrintWriter pen, int vertex) {
+    // get the list of edges coming out vertex
+   // List<Edge> listEdges = vertices[vertex];
+    boolean[] visited = new boolean[vertices.length];
+    for (int i = 0; i < visited.length; i++) {
+      visited[i] = false;
+    }
+    
+    // A collection of the remaining things to print
+    Stack<Integer> remaining = new Stack<Integer>();
+    // push the vertex on the stack
+    remaining.push(vertex);
+
+    while (!remaining.isEmpty()) {
+      // popping the root in first iteration
+      int next = remaining.pop();
+      // if the vertex was not visited
+      if (visited[next] == false) {
+        visited[vertex] = true;
+      }
+      // get all adjacent vertices (depth first) and explore it
+      Iterator<Edge> itr = edgesFrom(next);
+      while (itr.hasNext()) {
+        int vertexReached = itr.next().to();
+        if (!visited[vertexReached]) {
+          remaining.push(vertexReached);
+          visited[vertexReached] = true;
+        }
+      }
+      
+    } // while
+    for (int i = 0; i < visited.length; i++) {
+      if (visited[i]) {
+        pen.println(i);
+      }
+    }
+  }
 
   // +----------+----------------------------------------------------
   // | Mutators |
