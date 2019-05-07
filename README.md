@@ -1,5 +1,10 @@
 graphs-2019
+
 ===========
 
-Some code to implement graphs, intended for a variety of labs and
-assignments for CSC 207 2019S.
+Author: Sam Rebelsky 
+
+Author: Giang Khuat
+
+This is a lab assignment for CSC207 - Object-oriented Programming & Data Structure at Grinnell in Spring 2019.
+
