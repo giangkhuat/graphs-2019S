@@ -291,14 +291,18 @@ public class Graph {
     }; // new Iterator<Integer>
   } // vertices()
   
-  public void reachableFrom(PrintWriter pen, int vertex) {
+ public void reachableFromDFS(PrintWriter pen, int vertex) {
     // get the list of edges coming out vertex
-   // List<Edge> listEdges = vertices[vertex];
+    // List<Edge> listEdges = vertices[vertex];
     boolean[] visited = new boolean[vertices.length];
     for (int i = 0; i < visited.length; i++) {
       visited[i] = false;
     }
-    
+
+    // if we dont initialize the first vertex as true in visited,
+    // it will take an extra step
+    // and when the graph has one vertex, visited[i] will not be set correctly
+
     // A collection of the remaining things to print
     Stack<Integer> remaining = new Stack<Integer>();
     // push the vertex on the stack
@@ -309,18 +313,22 @@ public class Graph {
       int next = remaining.pop();
       // if the vertex was not visited
       if (visited[next] == false) {
-        visited[vertex] = true;
-      }
-      // get all adjacent vertices (depth first) and explore it
-      Iterator<Edge> itr = edgesFrom(next);
-      while (itr.hasNext()) {
-        int vertexReached = itr.next().to();
-        if (!visited[vertexReached]) {
-          remaining.push(vertexReached);
-          visited[vertexReached] = true;
+        visited[next] = true;
+        // get all adjacent vertices (depth first) and explore it
+        Iterator<Edge> itr = edgesFrom(next);
+        while (itr.hasNext()) {
+          int vertexReached = itr.next().to();
+          if (!visited[vertexReached]) {
+            remaining.push(vertexReached);
+            // cant set visited[vertexReached] to true here 
+            // because only when we pop, the vertex is visited (or we explored it)
+            // else we just seen it
+            //visited[vertexReached] = true;
+          }
         }
+
       }
-      
+
     } // while
     for (int i = 0; i < visited.length; i++) {
       if (visited[i]) {
@@ -328,6 +336,52 @@ public class Graph {
       }
     }
   }
+  
+  /*  reachableFrom implemented recursively
+   * 
+   * 
+   * First idea: 
+   *    * Base case: when the current node is already visited, return
+   *    * Inductive case: Else find all the adjacent vertices
+   *                use DFS to reach all neighbor of those vertices
+   *     Pros : better logic, better to debug
+   *     Cons: not efficient: For example:
+   *        Graph : 1 --->2--->3---> 1
+   *        We need to reach 1 to find out it was already visited
+   *        But we actually can know it when we are at 3 because the edge coming out of 3 next goes back to 1
+   * Second idea: Collapse base case into the iteration
+   *     * create the iterator of all edges coming out of vertex
+   *     * while hasNext(), 
+   *        * Base case: if vertex was visited, do nothing
+   *        * Else call the recursive procedure on the vertex and the boolean array visited 
+   *     Pros: shorter, we will never reach the node that will be repeated, because the 
+   *     the if condition inside the iteration prevents it
+   *        
+   */
+  public void reachableFromRecHelper(int vertex, boolean[] visited) {
+    visited[vertex] = true;
+    System.out.println("vertex " + vertex);
+
+    Iterator<Edge> itr = edgesFrom(vertex);
+    while (itr.hasNext()) {
+      int vertexReached = itr.next().to();
+      if (!visited[vertexReached]) {
+        reachableFromRecHelper(vertexReached, visited);
+      }
+
+    }
+  }
+  public void reachableFromRec(int vertex) {
+    // initialize the boolean array
+    boolean[] visited = new boolean[vertices.length];
+    for (int i = 0; i < visited.length; i++) {
+      visited[i] = false;
+    }   
+    reachableFromRecHelper(vertex, visited);
+    
+  }
+
+  
 
   // +----------+----------------------------------------------------
   // | Mutators |
