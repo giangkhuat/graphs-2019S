@@ -382,6 +382,43 @@ public class Graph {
   }
 
   
+   public Iterator<Integer> iterator(int vertex) {
+    return new Iterator<Integer>() {
+      Queue<Integer> remaining = new LinkedList<Integer>();
+      Integer current = vertex;
+      boolean[] visited = new boolean[vertices.length];
+      
+      public boolean hasNext() {  
+        return !remaining.isEmpty();
+      } // hasNext()
+
+      public Integer next() {
+
+        if (!hasNext()) {
+          try {
+            throw new Exception("No more elements");
+          } catch (Exception e) {
+            // TODO Auto-generated catch block
+            
+          }
+        }
+
+        int next = remaining.remove();
+        if (visited[next] == false) {
+          visited[next] = true;
+          // get all adjacent vertices (depth first) and explore it
+          Iterator<Edge> itr = edgesFrom(next);
+          while (itr.hasNext()) {
+            int vertexReached = itr.next().to();
+            if (!visited[vertexReached]) {
+              remaining.add(vertexReached);
+            }
+          }
+        }
+        return next;
+      }// next()
+    }; // new Iterator()
+  } // iterator()
 
   // +----------+----------------------------------------------------
   // | Mutators |
